@@ -29,16 +29,27 @@ class Dino(pygame.sprite.Sprite):
         self.list_index = 0
         self.image = self.dinosaur_images[self.list_index]
         self.rect = self.image.get_rect()
-        self.rect.center = (100, 100) 
+        self.rect.center = (100, HEIGHT - 90) 
     def update(self):
         if self.list_index > 2:
             self.list_index = 0
         self.list_index += 0.25
         self.image = self.dinosaur_images[int(self.list_index)]
 
+class Clouds(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = sprite_sheet.subsurface((7*32, 0), (32,32))
+        self.image = pygame.transform.scale(self.image, (32*3, 32*3))
+        self.rect = self.image.get_rect()
+        self.rect.center = (100, 100)
+
 all_sprites = pygame.sprite.Group()
 dino = Dino()
 all_sprites.add(dino)
+
+cloud = Clouds()
+all_sprites.add(cloud)
 
 frame_per_second = pygame.time.Clock()
 while True:
