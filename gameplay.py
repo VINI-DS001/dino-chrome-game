@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from sys import exit
 import os
+from random import randrange
 
 main_folder = os.path.dirname(__file__)
 images_folder = os.path.join(main_folder, 'images')
@@ -42,14 +43,22 @@ class Clouds(pygame.sprite.Sprite):
         self.image = sprite_sheet.subsurface((7*32, 0), (32,32))
         self.image = pygame.transform.scale(self.image, (32*3, 32*3))
         self.rect = self.image.get_rect()
-        self.rect.center = (100, 100)
+        self.rect.y = randrange(50, 200, 50)
+        self.rect.x = WIDTH - randrange(30, 300, 90)
+
+    def update(self):
+        if self.rect.topright[0] < 0:
+            self.rect.x = WIDTH
+            self.rect.y = randrange(50, 200, 50)
+        self.rect.x -= 10
 
 all_sprites = pygame.sprite.Group()
 dino = Dino()
 all_sprites.add(dino)
 
-cloud = Clouds()
-all_sprites.add(cloud)
+for i in range(4):
+    cloud = Clouds()
+    all_sprites.add(cloud)
 
 frame_per_second = pygame.time.Clock()
 while True:
