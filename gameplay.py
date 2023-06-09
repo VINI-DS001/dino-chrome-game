@@ -52,6 +52,15 @@ class Clouds(pygame.sprite.Sprite):
             self.rect.y = randrange(50, 200, 50)
         self.rect.x -= 10
 
+class Floor(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = sprite_sheet.subsurface((6*32, 0), (32,32))
+        self.image = pygame.transform.scale(self.image, (32*2, 32*2))
+        self.rect = self.image.get_rect()
+        self.rect.y = HEIGHT - 64
+        self.rect.x = WIDTH - 64
+
 all_sprites = pygame.sprite.Group()
 dino = Dino()
 all_sprites.add(dino)
@@ -59,6 +68,9 @@ all_sprites.add(dino)
 for i in range(4):
     cloud = Clouds()
     all_sprites.add(cloud)
+
+floor = Floor()
+all_sprites.add(floor)
 
 frame_per_second = pygame.time.Clock()
 while True:
