@@ -4,6 +4,9 @@ from sys import exit
 import os
 from random import randrange
 
+pygame.init()
+pygame.mixer.init()
+
 main_folder = os.path.dirname(__file__)
 images_folder = os.path.join(main_folder, 'images')
 sounds_folder = os.path.join(main_folder, 'sounds')
@@ -30,8 +33,14 @@ class Dino(pygame.sprite.Sprite):
         self.list_index = 0
         self.image = self.dinosaur_images[self.list_index]
         self.rect = self.image.get_rect()
-        self.rect.center = (100, HEIGHT - 64) 
+        self.rect.center = (100, HEIGHT - 64)
+        self.jmp = False
+    
+    def jump(self):
+        self.jmp = True
     def update(self):
+        if self.jmp == True:
+            self.rect.y -= 20
         if self.list_index > 2:
             self.list_index = 0
         self.list_index += 0.25
@@ -86,6 +95,10 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             exit()
+        if event.type == KEYDOWN:
+            if event.key == K_SPACE:
+                dino.jump()
+
     all_sprites.draw(screen)
     all_sprites.update()
 
