@@ -14,42 +14,58 @@ sounds_folder = os.path.join(main_folder, 'sounds')
 WIDTH = 640
 HEIGHT = 400
 
-WHITE = (255,255,255)
+WHITE = (255, 255, 255)
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-pygame.display.set_caption('Dino Game')
+pygame.display.set_caption('Dino Chrome Game')
 
 sprite_sheet = pygame.image.load(os.path.join(images_folder, 'gameSpritesheet.png')).convert_alpha()
+
 
 class Dino(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
+        self.jmp_sound = pygame.mixer.Sound(os.path.join(sounds_folder, 'jumpSound.wav'))
+        self.jmp_sound.set_volume(1)
         self.dinosaur_images = []
         for i in range(3):
-            img = sprite_sheet.subsurface((i * 32,0), (32,32))
+            img = sprite_sheet.subsurface((i * 32, 0), (32, 32))
             img = pygame.transform.scale(img, (32*3, 32*3))
             self.dinosaur_images.append(img)
+
         self.list_index = 0
         self.image = self.dinosaur_images[self.list_index]
         self.rect = self.image.get_rect()
-        self.rect.center = (100, HEIGHT - 64)
+        self.initial_pos_y = HEIGHT - 64 - 96//2
+        self.rect.center = [100, HEIGHT - 64]
         self.jmp = False
-    
+
     def jump(self):
         self.jmp = True
+        self.jmp_sound.play()
+
     def update(self):
         if self.jmp == True:
+            if self.rect.y <= 200:
+                self.jmp = False
             self.rect.y -= 20
+        else:
+            if self.rect.y < self.initial_pos_y:
+                self.rect.y += 20
+            else:
+                self.rect.y = self.initial_pos_y
+
         if self.list_index > 2:
             self.list_index = 0
         self.list_index += 0.25
         self.image = self.dinosaur_images[int(self.list_index)]
 
+
 class Clouds(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = sprite_sheet.subsurface((7*32, 0), (32,32))
+        self.image = sprite_sheet.subsurface((7*32, 0), (32, 32))
         self.image = pygame.transform.scale(self.image, (32*3, 32*3))
         self.rect = self.image.get_rect()
         self.rect.y = randrange(50, 200, 50)
@@ -64,7 +80,7 @@ class Clouds(pygame.sprite.Sprite):
 class Floor(pygame.sprite.Sprite):
     def __init__(self, pos_x):
         pygame.sprite.Sprite.__init__(self)
-        self.image = sprite_sheet.subsurface((6*32, 0), (32,32))
+        self.image = sprite_sheet.subsurface((6*32, 0), (32, 32))
         self.image = pygame.transform.scale(self.image, (32*2, 32*2))
         self.rect = self.image.get_rect()
         self.rect.y = HEIGHT - 64
@@ -97,7 +113,10 @@ while True:
             exit()
         if event.type == KEYDOWN:
             if event.key == K_SPACE:
-                dino.jump()
+                if dino.rect.y != dino.initial_pos_y:
+                    pass
+                else:
+                    dino.jump()
 
     all_sprites.draw(screen)
     all_sprites.update()
