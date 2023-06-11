@@ -91,6 +91,18 @@ class Floor(pygame.sprite.Sprite):
             self.rect.x = WIDTH
         self.rect.x -= 10
 
+class Cactus(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = sprite_sheet.subsurface((5*32, 0), (32, 32))
+        self.image = pygame.transform.scale(self.image, (32*2, 32*2))
+        self.rect = self.image.get_rect()
+        self.rect.center = (WIDTH, HEIGHT - 64)
+    def update(self):
+        if self.rect.topright[0] < 0:
+            self.rect.x = WIDTH
+        self.rect.x -= 10
+
 all_sprites = pygame.sprite.Group()
 dino = Dino()
 all_sprites.add(dino)
@@ -102,6 +114,9 @@ for i in range(4):
 for i in range(640*2//64):
     floor = Floor(i)
     all_sprites.add(floor)
+
+cactus = Cactus()
+all_sprites.add(cactus)
 
 frame_per_second = pygame.time.Clock()
 while True:
