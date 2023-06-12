@@ -22,6 +22,9 @@ pygame.display.set_caption('Dino Chrome Game')
 
 sprite_sheet = pygame.image.load(os.path.join(images_folder, 'gameSpritesheet.png')).convert_alpha()
 
+collision_sound = pygame.mixer.Sound(os.path.join(sounds_folder, 'deathSound.wav'))
+collision_sound.set_volume(1)
+bump = False
 
 class Dino(pygame.sprite.Sprite):
     def __init__(self):
@@ -37,6 +40,7 @@ class Dino(pygame.sprite.Sprite):
         self.list_index = 0
         self.image = self.dinosaur_images[self.list_index]
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
         self.initial_pos_y = HEIGHT - 64 - 96//2
         self.rect.center = [100, HEIGHT - 64]
         self.jmp = False
@@ -97,6 +101,7 @@ class Cactus(pygame.sprite.Sprite):
         self.image = sprite_sheet.subsurface((5*32, 0), (32, 32))
         self.image = pygame.transform.scale(self.image, (32*2, 32*2))
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect.center = (WIDTH, HEIGHT - 64)
     def update(self):
         if self.rect.topright[0] < 0:
@@ -118,6 +123,9 @@ for i in range(640*2//64):
 cactus = Cactus()
 all_sprites.add(cactus)
 
+obstacles_group = pygame.sprite.Group()
+obstacles_group.add(cactus)
+
 frame_per_second = pygame.time.Clock()
 while True:
     frame_per_second.tick(30)
@@ -132,8 +140,17 @@ while True:
                     pass
                 else:
                     dino.jump()
+    collision = pygame.sprite.spritecollide(dino, obstacles_group, False, pygame.sprite.collide_mask)
 
     all_sprites.draw(screen)
-    all_sprites.update()
+
+    if collision and bump == False:
+        collision_sound.play()
+        bump = True
+
+    if bump == True:
+        pass
+    else:
+        all_sprites.update()
 
     pygame.display.flip()
